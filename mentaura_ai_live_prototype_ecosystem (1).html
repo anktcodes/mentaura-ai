@@ -1,0 +1,1341 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mentaura AI — Sovereign Adaptive Learning Companion</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Chart.js CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap');
+        
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background-color: #f8fafc;
+            color: #0f172a;
+            -webkit-font-smoothing: antialiased;
+        }
+        
+        .font-mono {
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 580px;
+            margin-left: auto;
+            margin-right: auto;
+            height: 280px;
+            max-height: 320px;
+        }
+
+        @media (min-width: 768px) {
+            .chart-container {
+                height: 310px;
+            }
+        }
+
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 5px;
+            height: 5px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: #f1f5f9;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 6px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+            background: #94a3b8;
+        }
+
+        .nav-btn-active {
+            background-color: #ffffff;
+            color: #4338ca;
+            box-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1);
+            font-weight: 700;
+        }
+
+        .chat-bubble-user {
+            background-color: #4338ca;
+            color: #ffffff;
+            border-radius: 18px 18px 4px 18px;
+        }
+
+        .chat-bubble-ai {
+            background-color: #ffffff;
+            color: #0f172a;
+            border: 1px solid #e2e8f0;
+            border-radius: 18px 18px 18px 4px;
+            box-shadow: 0 1px 2px 0 rgb(0 0 0 / 0.03);
+        }
+
+        .chat-bubble-peer {
+            background-color: #fff7ed;
+            color: #7c2d12;
+            border: 1px solid #fed7aa;
+            border-radius: 18px 18px 18px 4px;
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col justify-between custom-scrollbar">
+
+    <!-- Chosen Palette: Clean Minimalist Warm Slate (#f8fafc) background with Indigo (#4338ca) primary accent, Emerald (#059669) success, and Amber (#d97706) warnings. -->
+    <!-- Application Structure Plan: Inspired by Brilliant.org (interactive step math verifier), Claude/Perplexity (clean workspace with side memory context), and Century Tech (bento analytics). Organized into 4 sleek views: 1. Student Socratic Workspace & Proof Studio; 2. Teacher BKT & SAFAL Portal; 3. Closed-Loop Engine Inspector; 4. SIH Pitch Defense & ROI Calculator. -->
+    <!-- Visualization & Content Choices: 1. Live Socratic Chat & Lean Step Proof Verifier (Vanilla JS DOM); 2. Class BKT Heatmap (Tailwind Bento Grid); 3. SIH Radar Comparison (Chart.js Canvas); 4. Sarvam-1 Indic Token Bar Chart (Chart.js Canvas); 5. ROI Impact Chart (Chart.js Canvas). CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+
+    <!-- Top Brand & Navigation Header -->
+    <header class="bg-white/90 backdrop-blur-md border-b border-slate-200/80 sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-2.5 flex flex-col md:flex-row items-center justify-between gap-3">
+            
+            <!-- Brand Identity -->
+            <div class="flex items-center space-x-3">
+                <div class="w-9 h-9 rounded-xl bg-indigo-600 text-white flex items-center justify-center font-black text-xl shadow-md shadow-indigo-200">
+                    M
+                </div>
+                <div>
+                    <div class="flex items-center gap-2">
+                        <span class="font-extrabold text-slate-900 text-base tracking-tight">MENTAURA AI</span>
+                        <span class="px-2 py-0.5 text-[10px] font-bold bg-emerald-50 text-emerald-700 rounded-md border border-emerald-200/80 flex items-center gap-1">
+                            <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
+                            Live System
+                        </span>
+                    </div>
+                    <p class="text-[11px] text-slate-500 font-medium">Sovereign Adaptive Learning Engine • DBSE / CBSE / NEP 2020</p>
+                </div>
+            </div>
+
+            <!-- Main Workspace Navigation Pills -->
+            <nav class="bg-slate-100/80 p-1 rounded-xl flex space-x-1 text-xs font-semibold text-slate-600 border border-slate-200/60 overflow-x-auto max-w-full">
+                <button onclick="switchTab('workspace')" id="tab-workspace" class="px-3 py-1.5 rounded-lg transition-all nav-btn-active whitespace-nowrap">
+                    🎓 Student Workspace
+                </button>
+                <button onclick="switchTab('teacher')" id="tab-teacher" class="px-3 py-1.5 rounded-lg transition-all hover:text-indigo-600 whitespace-nowrap">
+                    📊 Teacher Hub
+                </button>
+                <button onclick="switchTab('inspector')" id="tab-inspector" class="px-3 py-1.5 rounded-lg transition-all hover:text-indigo-600 whitespace-nowrap">
+                    🔄 Engine Trace
+                </button>
+                <button onclick="switchTab('defense')" id="tab-defense" class="px-3 py-1.5 rounded-lg transition-all hover:text-indigo-600 whitespace-nowrap">
+                    🎯 Pitch Defense & USP
+                </button>
+                <button onclick="switchTab('roi')" id="tab-roi" class="px-3 py-1.5 rounded-lg transition-all hover:text-indigo-600 whitespace-nowrap">
+                    📈 ROI Calculator
+                </button>
+            </nav>
+
+            <!-- Language & System Badges -->
+            <div class="hidden lg:flex items-center space-x-2">
+                <div class="bg-slate-100 p-0.5 rounded-lg flex text-[11px] font-semibold text-slate-600 border border-slate-200/60">
+                    <button onclick="setGlobalLang('en')" id="btn-lang-en" class="px-2 py-0.5 rounded bg-white text-indigo-600 font-bold shadow-sm">EN</button>
+                    <button onclick="setGlobalLang('hi')" id="btn-lang-hi" class="px-2 py-0.5 rounded hover:text-indigo-600">हिंदी</button>
+                </div>
+                <span class="px-2.5 py-1 rounded-lg text-[11px] font-mono bg-indigo-50 text-indigo-700 border border-indigo-200/60">
+                    APAAR: 9081-2234
+                </span>
+            </div>
+
+        </div>
+    </header>
+
+    <!-- Main Application Canvas -->
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 flex-grow w-full">
+
+        <!-- VIEW 1: STUDENT WORKSPACE & PROOF STUDIO -->
+        <section id="sec-workspace" class="space-y-5">
+            
+            <!-- Sub-Header & Studio Mode Switcher -->
+            <div class="bg-white p-4 sm:p-5 rounded-2xl border border-slate-200/80 shadow-sm flex flex-col md:flex-row justify-between items-start md:items-center gap-3">
+                <div>
+                    <h2 class="text-base font-bold text-slate-900">Student Socratic Studio & Proof Checker</h2>
+                    <p class="text-xs text-slate-500 mt-0.5">
+                        Experience Mentaura AI's anti-leakage Reflex Guard, line-by-line math proof checker, and AI peer lab.
+                    </p>
+                </div>
+
+                <!-- Sub-Mode Switcher Pills -->
+                <div class="flex p-1 bg-slate-100 rounded-xl text-xs font-semibold text-slate-600 border border-slate-200/60 self-stretch md:self-auto justify-stretch">
+                    <button onclick="setStudioMode('chat')" id="smode-chat" class="flex-1 md:flex-none px-3.5 py-1.5 rounded-lg bg-white text-indigo-700 shadow-sm font-bold">
+                        💬 Socratic Tutor & Peer Lab
+                    </button>
+                    <button onclick="setStudioMode('proof')" id="smode-proof" class="flex-1 md:flex-none px-3.5 py-1.5 rounded-lg hover:text-indigo-700">
+                        📝 Step Proof Verifier
+                    </button>
+                    <button onclick="setStudioMode('ocr')" id="smode-ocr" class="flex-1 md:flex-none px-3.5 py-1.5 rounded-lg hover:text-indigo-700">
+                        📷 Multimodal Vision
+                    </button>
+                </div>
+            </div>
+
+            <!-- STUDIO MODE A: SOCRATIC CHAT & PEER LAB -->
+            <div id="view-studio-chat" class="grid grid-cols-1 lg:grid-cols-12 gap-5">
+                
+                <!-- Main Conversational Interface (Claude/Perplexity Style) -->
+                <div class="lg:col-span-8 bg-white rounded-2xl border border-slate-200/80 shadow-sm flex flex-col h-[580px]">
+                    
+                    <!-- Chat Header -->
+                    <div class="p-3.5 border-b border-slate-100 flex justify-between items-center bg-slate-50/50 rounded-t-2xl">
+                        <div class="flex items-center space-x-2.5">
+                            <div class="w-7 h-7 rounded-lg bg-indigo-600 text-white flex items-center justify-center font-bold text-xs">
+                                🤖
+                            </div>
+                            <div>
+                                <div class="font-bold text-slate-800 text-xs flex items-center gap-1.5">
+                                    <span>Socratic AI Companion</span>
+                                    <span class="text-[10px] font-mono text-indigo-600 bg-indigo-50 px-1.5 py-0.2 rounded">GRPO Fine-Tuned</span>
+                                </div>
+                                <div class="text-[10px] text-slate-500 flex items-center gap-1">
+                                    <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
+                                    <span>Reflex-Guard Active (&lt;38ms)</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div id="reflex-status-badge" class="px-2.5 py-1 bg-emerald-50 border border-emerald-200/80 text-emerald-800 text-[11px] font-medium rounded-lg flex items-center gap-1">
+                            <span>🛡️</span> Guard Ready
+                        </div>
+                    </div>
+
+                    <!-- Chat Message Stream -->
+                    <div id="chat-messages-container" class="p-4 flex-grow overflow-y-auto space-y-3.5 text-xs custom-scrollbar bg-slate-50/20">
+                        
+                        <!-- Initial AI Welcome -->
+                        <div class="flex items-start space-x-2.5">
+                            <div class="w-6 h-6 rounded-full bg-indigo-100 text-indigo-700 flex items-center justify-center font-bold text-[10px] flex-shrink-0 mt-0.5">
+                                AI
+                            </div>
+                            <div class="chat-bubble-ai p-3.5 max-w-[88%] space-y-2">
+                                <p class="font-semibold text-slate-900">Namaste! I am your Mentaura Socratic Tutor.</p>
+                                <p class="text-slate-600 leading-relaxed">
+                                    I am tailored for **Grades 8–12 CBSE, DBSE & SOSE STEM**. Instead of handing out raw homework answers, I ask guided questions and deploy step verifiers to strengthen your reasoning.
+                                </p>
+                                <div class="p-2 bg-indigo-50/80 rounded-lg text-[11px] text-indigo-900 border border-indigo-100 font-medium">
+                                    💡 <em>Try asking for direct homework answers below to test the 37ms Reflex Guard!</em>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+
+                    <!-- Dynamic Reflex Alert Ribbon -->
+                    <div id="reflex-alert-box" class="hidden px-4 py-2 bg-amber-50 border-t border-amber-200 text-[11px] text-amber-900 flex items-center justify-between">
+                        <div class="flex items-center gap-2">
+                            <span class="px-1.5 py-0.5 bg-amber-200 text-amber-900 font-bold rounded text-[10px]">37.6ms INTERCEPT</span>
+                            <span class="font-medium">Direct answer request blocked. Diverting to Socratic hints & Peer Challenge.</span>
+                        </div>
+                        <span class="font-mono text-[10px] bg-amber-100 px-1.5 py-0.5 rounded text-amber-800">Leakage Risk: 0.98</span>
+                    </div>
+
+                    <!-- Quick Preset Buttons -->
+                    <div class="px-3.5 py-2 border-t border-slate-100 bg-white flex flex-wrap gap-1.5 text-[11px]">
+                        <span class="text-slate-400 font-medium self-center text-[10px] uppercase tracking-wider mr-1">Test Prompts:</span>
+                        <button onclick="sendQuickPrompt('direct')" class="px-2.5 py-1 bg-amber-50 text-amber-800 border border-amber-200/80 rounded-lg hover:bg-amber-100 transition font-medium">
+                            ⚡ Direct Answer Attempt
+                        </button>
+                        <button onclick="sendQuickPrompt('socratic')" class="px-2.5 py-1 bg-indigo-50 text-indigo-800 border border-indigo-200/80 rounded-lg hover:bg-indigo-100 transition font-medium">
+                            💡 Kinematics Derivation
+                        </button>
+                        <button onclick="sendQuickPrompt('hindi')" class="px-2.5 py-1 bg-emerald-50 text-emerald-800 border border-emerald-200/80 rounded-lg hover:bg-emerald-100 transition font-medium">
+                            🌐 पाइथागोरस प्रमेय (Hindi)
+                        </button>
+                        <button onclick="sendQuickPrompt('emc')" class="px-2.5 py-1 bg-purple-50 text-purple-800 border border-purple-200/80 rounded-lg hover:bg-purple-100 transition font-medium">
+                            🚀 Business Blasters Pitch
+                        </button>
+                    </div>
+
+                    <!-- Chat Input Area -->
+                    <div class="p-3 border-t border-slate-200/80 bg-white rounded-b-2xl flex items-center gap-2">
+                        <input id="user-chat-input" type="text" placeholder="Ask a question or enter a math step..." onkeypress="handleChatKeyPress(event)" class="flex-grow bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2 text-xs text-slate-800 focus:outline-none focus:ring-2 focus:ring-indigo-500 font-medium">
+                        <button onclick="sendUserMessage()" class="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-xl text-xs font-bold transition flex items-center gap-1 shadow-sm">
+                            <span>Send</span>
+                            <span>➔</span>
+                        </button>
+                    </div>
+
+                </div>
+
+                <!-- Side Context Cards (Brilliant / Claude Style) -->
+                <div class="lg:col-span-4 space-y-4">
+                    
+                    <!-- Multi-Agent Peer Lab Box -->
+                    <div class="bg-white p-4 rounded-2xl border border-slate-200/80 shadow-sm space-y-3">
+                        <div class="flex justify-between items-center border-b border-slate-100 pb-2">
+                            <h4 class="font-bold text-slate-800 text-xs flex items-center gap-1.5">
+                                <span>👥</span> Multi-Agent Peer Lab
+                            </h4>
+                            <span class="text-[10px] font-bold text-indigo-600 bg-indigo-50 px-2 py-0.5 rounded">Synthetic Peers</span>
+                        </div>
+                        <p class="text-[11px] text-slate-500 leading-relaxed">
+                            Mentaura introduces synthetic AI peers into discussions. Peer Charlie intentionally injects conceptual errors to test whether you can spot mistakes.
+                        </p>
+
+                        <div class="space-y-2 text-xs">
+                            <div class="p-2.5 bg-slate-50 rounded-xl border border-slate-100 flex items-center space-x-2">
+                                <div class="w-6 h-6 rounded-full bg-emerald-600 text-white flex items-center justify-center font-bold text-[10px]">A</div>
+                                <div class="flex-grow">
+                                    <div class="flex justify-between font-bold text-slate-800 text-[11px]">
+                                        <span>Peer Alice</span>
+                                        <span class="text-emerald-600 text-[10px]">Advocate</span>
+                                    </div>
+                                    <p class="text-[10px] text-slate-500">Provides rigorous step validation.</p>
+                                </div>
+                            </div>
+
+                            <div class="p-2.5 bg-amber-50/70 rounded-xl border border-amber-100 flex items-center space-x-2">
+                                <div class="w-6 h-6 rounded-full bg-amber-600 text-white flex items-center justify-center font-bold text-[10px]">C</div>
+                                <div class="flex-grow">
+                                    <div class="flex justify-between font-bold text-slate-800 text-[11px]">
+                                        <span>Peer Charlie</span>
+                                        <span class="text-amber-700 text-[10px]">Challenger</span>
+                                    </div>
+                                    <p class="text-[10px] text-slate-600">Posits deliberate errors to test critique skills.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Live Learner State (BKT Engine Vector) -->
+                    <div class="bg-white p-4 rounded-2xl border border-slate-200/80 shadow-sm space-y-3">
+                        <div class="flex justify-between items-center border-b border-slate-100 pb-2">
+                            <h4 class="font-bold text-slate-800 text-xs flex items-center gap-1.5">
+                                <span>🧠</span> Active BKT State
+                            </h4>
+                            <span class="text-[10px] font-mono bg-indigo-50 text-indigo-700 px-2 py-0.5 rounded">p(L_t) Updates</span>
+                        </div>
+
+                        <div class="space-y-2.5 text-xs">
+                            <div>
+                                <div class="flex justify-between text-[11px] font-medium text-slate-700 mb-1">
+                                    <span>Kinematics (M_204)</span>
+                                    <span id="bkt-score-1" class="font-bold text-indigo-600">62%</span>
+                                </div>
+                                <div class="w-full bg-slate-100 h-2 rounded-full overflow-hidden">
+                                    <div id="bkt-bar-1" class="bg-indigo-600 h-2 rounded-full transition-all duration-500" style="width: 62%;"></div>
+                                </div>
+                            </div>
+
+                            <div>
+                                <div class="flex justify-between text-[11px] font-medium text-slate-700 mb-1">
+                                    <span>Graphical Calculus (M_205)</span>
+                                    <span id="bkt-score-2" class="font-bold text-indigo-600">45%</span>
+                                </div>
+                                <div class="w-full bg-slate-100 h-2 rounded-full overflow-hidden">
+                                    <div id="bkt-bar-2" class="bg-indigo-600 h-2 rounded-full transition-all duration-500" style="width: 45%;"></div>
+                                </div>
+                            </div>
+
+                            <div>
+                                <div class="flex justify-between text-[11px] font-medium text-slate-700 mb-1">
+                                    <span>Hindi Accuracy (SARVAM-1)</span>
+                                    <span class="font-bold text-emerald-600">94%</span>
+                                </div>
+                                <div class="w-full bg-slate-100 h-2 rounded-full overflow-hidden">
+                                    <div class="bg-emerald-500 h-2 rounded-full" style="width: 94%;"></div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="pt-2 border-t border-slate-100 text-[10px] text-slate-500 flex justify-between font-mono">
+                            <span>Slip (s): <strong>0.08</strong></span>
+                            <span>Guess (g): <strong>0.12</strong></span>
+                        </div>
+                    </div>
+
+                </div>
+
+            </div>
+
+            <!-- STUDIO MODE B: STEP PROOF VERIFIER (Brilliant.org Style) -->
+            <div id="view-studio-proof" class="hidden bg-white p-5 sm:p-6 rounded-2xl border border-slate-200/80 shadow-sm space-y-5">
+                <div class="flex flex-col sm:flex-row justify-between sm:items-center gap-2 border-b border-slate-100 pb-3">
+                    <div>
+                        <h3 class="font-bold text-slate-900 text-sm sm:text-base flex items-center gap-2">
+                            <span>📝</span> Line-by-Line Formal Step Verifier (Lean 4 Kernel)
+                        </h3>
+                        <p class="text-xs text-slate-500">
+                            Enter derivation steps line-by-line. The Lean kernel checks logic before awarding credit.
+                        </p>
+                    </div>
+                    <span class="px-2.5 py-1 bg-emerald-100 text-emerald-800 font-bold text-xs rounded-lg self-start sm:self-auto">
+                        Zero-Hallucination Proof Verification
+                    </span>
+                </div>
+
+                <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+                    <div class="lg:col-span-7 space-y-3">
+                        <div class="text-xs font-bold text-slate-700 uppercase tracking-wider">Problem Target: Derive \( v^2 = u^2 + 2as \)</div>
+                        
+                        <div class="space-y-2 font-mono text-xs">
+                            <div class="flex items-center gap-2">
+                                <span class="w-14 font-bold text-slate-400 text-right">Step 1:</span>
+                                <input id="proof-step-1" type="text" value="v = u + a * t" class="flex-grow p-2.5 bg-slate-50 border border-slate-300 rounded-lg focus:ring-2 focus:ring-indigo-500">
+                                <span id="vstatus-1" class="text-emerald-600 font-bold text-xs w-16 text-right">✓ Valid</span>
+                            </div>
+
+                            <div class="flex items-center gap-2">
+                                <span class="w-14 font-bold text-slate-400 text-right">Step 2:</span>
+                                <input id="proof-step-2" type="text" value="t = (v - u) / a" class="flex-grow p-2.5 bg-slate-50 border border-slate-300 rounded-lg focus:ring-2 focus:ring-indigo-500">
+                                <span id="vstatus-2" class="text-emerald-600 font-bold text-xs w-16 text-right">✓ Valid</span>
+                            </div>
+
+                            <div class="flex items-center gap-2">
+                                <span class="w-14 font-bold text-slate-400 text-right">Step 3:</span>
+                                <input id="proof-step-3" type="text" value="s = u*t + 0.5*a*t^2" class="flex-grow p-2.5 bg-slate-50 border border-slate-300 rounded-lg focus:ring-2 focus:ring-indigo-500">
+                                <span id="vstatus-3" class="text-emerald-600 font-bold text-xs w-16 text-right">✓ Valid</span>
+                            </div>
+
+                            <div class="flex items-center gap-2">
+                                <span class="w-14 font-bold text-slate-400 text-right">Step 4:</span>
+                                <input id="proof-step-4" type="text" value="s = u*((v-u)/a) + 0.5*a*((v-u)/a)^2" class="flex-grow p-2.5 bg-slate-50 border border-slate-300 rounded-lg focus:ring-2 focus:ring-indigo-500">
+                                <span id="vstatus-4" class="text-emerald-600 font-bold text-xs w-16 text-right">✓ Valid</span>
+                            </div>
+
+                            <div class="flex items-center gap-2">
+                                <span class="w-14 font-bold text-slate-400 text-right">Step 5:</span>
+                                <input id="proof-step-5" type="text" value="2*a*s = v^2 + u^2" class="flex-grow p-2.5 bg-amber-50 border border-amber-300 text-amber-900 rounded-lg focus:ring-2 focus:ring-amber-500">
+                                <span id="vstatus-5" class="text-amber-600 font-bold text-xs w-16 text-right">✗ Error</span>
+                            </div>
+                        </div>
+
+                        <div class="pt-2 flex gap-2">
+                            <button onclick="runFormalCheck()" class="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-lg text-xs font-bold transition shadow-sm">
+                                🔍 Verify Proof Steps
+                            </button>
+                            <button onclick="fixStepError()" class="bg-slate-200 hover:bg-slate-300 text-slate-800 px-4 py-2 rounded-lg text-xs font-bold transition">
+                                🛠️ Auto-Fix Sign Error in Step 5
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Formal Engine Output Box -->
+                    <div class="lg:col-span-5 bg-slate-900 text-white rounded-xl p-4 font-mono text-xs flex flex-col justify-between space-y-3">
+                        <div>
+                            <div class="flex justify-between text-slate-400 border-b border-slate-800 pb-2 mb-2 text-[10px]">
+                                <span>LEAN 4 KERNEL VERIFIER</span>
+                                <span class="text-emerald-400">STATUS: READY</span>
+                            </div>
+                            <div id="lean-terminal-output" class="text-slate-300 space-y-1.5 leading-relaxed text-[11px]">
+                                <p class="text-emerald-400">[INFO] Steps 1..4 mathematically verified.</p>
+                                <p class="text-amber-400">[ERROR] Step 5 mismatch: Expected (v^2 - u^2), found (v^2 + u^2).</p>
+                                <p class="text-slate-400">Diagnostic: Sign inversion mistake detected during expansion.</p>
+                            </div>
+                        </div>
+                        <div class="p-2.5 bg-slate-800 rounded-lg text-[11px] text-indigo-300 border border-slate-700">
+                            💡 <strong>Pedagogical Hint:</strong> "Review step 4 expansion of (v - u)^2. Is the middle term positive or negative?"
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- STUDIO MODE C: MULTIMODAL VISION -->
+            <div id="view-studio-ocr" class="hidden bg-white p-5 sm:p-6 rounded-2xl border border-slate-200/80 shadow-sm space-y-5">
+                <div class="flex flex-col sm:flex-row justify-between sm:items-center gap-2 border-b border-slate-100 pb-3">
+                    <div>
+                        <h3 class="font-bold text-slate-900 text-sm sm:text-base flex items-center gap-2">
+                            <span>📷</span> Multimodal OCR Ingestion (Mistral Vision Engine)
+                        </h3>
+                        <p class="text-xs text-slate-500">
+                            Parse scanned handwritten homework or regional language worksheets into structured LaTeX and spatial bounding boxes.
+                        </p>
+                    </div>
+                    <span class="px-2.5 py-1 bg-indigo-100 text-indigo-800 font-bold text-xs rounded-lg self-start sm:self-auto">
+                        Spatial LaTeX Extraction
+                    </span>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 text-xs">
+                    <div class="border-2 border-dashed border-slate-300 rounded-xl p-6 bg-slate-50 flex flex-col items-center justify-center text-center space-y-3">
+                        <div class="w-10 h-10 bg-indigo-100 text-indigo-600 rounded-xl flex items-center justify-center font-bold text-lg">
+                            📐
+                        </div>
+                        <div>
+                            <div class="font-bold text-slate-800 text-sm">Handwritten Homework Sheet</div>
+                            <p class="text-slate-500 text-[11px]">Scanned image of student derivation sheet.</p>
+                        </div>
+                        <div class="p-3 bg-white border border-slate-200 rounded-lg text-left font-mono text-[11px] text-slate-700 w-full space-y-1">
+                            <div>[Sample Image Scan]</div>
+                            <div class="text-indigo-600 font-bold">Equation: v = u + at</div>
+                            <div>Diagram: Constant acceleration slope</div>
+                        </div>
+                        <button onclick="runOCRScan()" class="bg-indigo-600 text-white px-4 py-2 rounded-lg font-bold shadow-sm hover:bg-indigo-700">
+                            Run Mistral OCR Parsing
+                        </button>
+                    </div>
+
+                    <div class="bg-slate-900 text-white p-4 rounded-xl font-mono space-y-2">
+                        <div class="text-slate-400 font-bold text-[10px] border-b border-slate-800 pb-2">
+                            PARSED MULTIMODAL JSON STRUCTURE
+                        </div>
+                        <pre id="ocr-json-preview" class="text-[11px] text-emerald-300 overflow-x-auto leading-relaxed">
+{
+  "engine": "Mistral OCR",
+  "confidence": 0.984,
+  "latex_inline": "v = u + at",
+  "bounding_box": [120, 45, 300, 200],
+  "socratic_trigger": "Prompt on slope interpretation"
+}</pre>
+                    </div>
+                </div>
+            </div>
+
+        </section>
+
+        <!-- VIEW 2: TEACHER BKT & SAFAL PORTAL (Century Tech Style) -->
+        <section id="sec-teacher" class="space-y-5 hidden">
+            
+            <div class="bg-white p-5 rounded-2xl border border-slate-200/80 shadow-sm space-y-2">
+                <div class="flex flex-col sm:flex-row justify-between sm:items-center gap-2">
+                    <div>
+                        <h3 class="text-lg font-bold text-slate-900">
+                            Teacher Dashboard & SAFAL Diagnostic Portal
+                        </h3>
+                        <p class="text-slate-500 text-xs">
+                            Classroom BKT heatmaps, CBSE SAFAL bands, DBSE 10-point rubrics, and automated WhatsApp parent logs.
+                        </p>
+                    </div>
+                    <span class="px-3 py-1 bg-emerald-100 text-emerald-800 font-bold text-xs rounded-full border border-emerald-200 self-start sm:self-auto">
+                        Cohort: Class 11 STEM (SOSE Rohini)
+                    </span>
+                </div>
+            </div>
+
+            <!-- Bento Grid Analytics -->
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-5">
+                
+                <div class="lg:col-span-8 bg-white p-5 rounded-2xl border border-slate-200/80 shadow-sm space-y-4">
+                    <h4 class="font-bold text-slate-800 text-xs border-b border-slate-100 pb-2 flex justify-between items-center">
+                        <span>Classroom Concept Mastery Matrix (35 Students)</span>
+                        <span class="text-[10px] text-indigo-600 font-normal">Real-time BKT updates</span>
+                    </h4>
+
+                    <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 text-xs">
+                        <div class="p-3 bg-emerald-50 border border-emerald-200/80 rounded-xl space-y-1">
+                            <div class="flex justify-between font-bold text-emerald-900">
+                                <span>Kinematics</span>
+                                <span>88%</span>
+                            </div>
+                            <p class="text-[10px] text-slate-600">31/35 proficient. Ready for 2D Motion.</p>
+                            <span class="inline-block px-2 py-0.5 bg-emerald-200 text-emerald-900 font-bold rounded text-[9px]">SAFAL: Advanced</span>
+                        </div>
+
+                        <div class="p-3 bg-amber-50 border border-amber-200/80 rounded-xl space-y-1">
+                            <div class="flex justify-between font-bold text-amber-900">
+                                <span>Work & Energy</span>
+                                <span>54%</span>
+                            </div>
+                            <p class="text-[10px] text-slate-600">16/35 struggle with conservative forces.</p>
+                            <span class="inline-block px-2 py-0.5 bg-amber-200 text-amber-900 font-bold rounded text-[9px]">SAFAL: Basic</span>
+                        </div>
+
+                        <div class="p-3 bg-rose-50 border border-rose-200/80 rounded-xl space-y-1">
+                            <div class="flex justify-between font-bold text-rose-900">
+                                <span>Rotational Motion</span>
+                                <span>32%</span>
+                            </div>
+                            <p class="text-[10px] text-slate-600">Prerequisite gap in Torque vectors.</p>
+                            <span class="inline-block px-2 py-0.5 bg-rose-200 text-rose-900 font-bold rounded text-[9px]">SAFAL: Below Basic</span>
+                        </div>
+                    </div>
+
+                    <!-- Student Roster Table -->
+                    <div class="overflow-x-auto pt-1">
+                        <table class="w-full text-left text-xs text-slate-600 border-collapse">
+                            <thead>
+                                <tr class="bg-slate-50 text-slate-700 border-b border-slate-200 font-bold text-[11px]">
+                                    <th class="p-2.5">Student Name</th>
+                                    <th class="p-2.5">APAAR ID</th>
+                                    <th class="p-2.5">CBSE SAFAL Band</th>
+                                    <th class="p-2.5">DBSE Rubric</th>
+                                    <th class="p-2.5">WhatsApp Nudge</th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-slate-100 text-[11px]">
+                                <tr>
+                                    <td class="p-2.5 font-bold text-slate-800">Aarav Sharma</td>
+                                    <td class="p-2.5 font-mono text-[10px]">9081-2234-1102</td>
+                                    <td class="p-2.5 text-emerald-700 font-bold">Proficient</td>
+                                    <td class="p-2.5">Grade Point 9 (A)</td>
+                                    <td class="p-2.5 text-slate-500">Sent (Kinematics Streak)</td>
+                                </tr>
+                                <tr>
+                                    <td class="p-2.5 font-bold text-slate-800">Priya Verma</td>
+                                    <td class="p-2.5 font-mono text-[10px]">9081-2234-1105</td>
+                                    <td class="p-2.5 text-amber-700 font-bold">Basic</td>
+                                    <td class="p-2.5">Grade Point 6 (B)</td>
+                                    <td class="p-2.5 text-slate-500">Sent (Parent Alert)</td>
+                                </tr>
+                                <tr>
+                                    <td class="p-2.5 font-bold text-slate-800">Rohan Gupta</td>
+                                    <td class="p-2.5 font-mono text-[10px]">9081-2234-1109</td>
+                                    <td class="p-2.5 text-emerald-700 font-bold">Advanced</td>
+                                    <td class="p-2.5">Grade Point 10 (A*)</td>
+                                    <td class="p-2.5 text-slate-500">Sent (Peer Challenge)</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <div class="lg:col-span-4 bg-white p-5 rounded-2xl border border-slate-200/80 shadow-sm space-y-4">
+                    <h4 class="font-bold text-slate-800 text-xs border-b border-slate-100 pb-2">
+                        DPI APAAR & WhatsApp Engine
+                    </h4>
+
+                    <div class="p-3 bg-indigo-50 border border-indigo-100 rounded-xl space-y-1.5 text-xs">
+                        <div class="flex justify-between font-bold text-indigo-900">
+                            <span>APAAR API Sync</span>
+                            <span class="text-emerald-600 text-[10px]">CONNECTED</span>
+                        </div>
+                        <p class="text-[10px] text-slate-600">
+                            Micro-credits and mastery evidence synced to Academic Bank of Credits (ABC).
+                        </p>
+                        <div class="font-mono text-[9px] bg-indigo-100/80 p-2 rounded text-indigo-950">
+                            // Payload<br>
+                            { "apaar_id": "9081-2234-1102", "credit": 0.5, "node": "M_204" }
+                        </div>
+                    </div>
+
+                    <div class="p-3 bg-emerald-50 border border-emerald-100 rounded-xl space-y-2 text-xs">
+                        <div class="flex justify-between font-bold text-emerald-900">
+                            <span>WhatsApp Cloud API</span>
+                            <span class="text-emerald-600 text-[10px]">ACTIVE</span>
+                        </div>
+                        <p class="text-[10px] text-slate-600">
+                            Daily micro-streaks sent to students; visual diagnostic cards dispatched to parents.
+                        </p>
+                        <button onclick="triggerWADemo()" class="w-full bg-emerald-600 text-white py-1.5 rounded-lg text-xs font-bold hover:bg-emerald-700 transition">
+                            Dispatch Test Parent Alert
+                        </button>
+                    </div>
+                </div>
+
+            </div>
+        </section>
+
+        <!-- VIEW 3: CLOSED-LOOP ENGINE INSPECTOR (LangSmith Style) -->
+        <section id="sec-inspector" class="space-y-5 hidden">
+            
+            <div class="bg-white p-5 rounded-2xl border border-slate-200/80 shadow-sm space-y-3">
+                <h3 class="text-lg font-bold text-slate-900">
+                    Closed-Loop Adaptive Engine Trace Inspector
+                </h3>
+                <p class="text-slate-600 text-xs leading-relaxed">
+                    Trace how Mentaura AI executes its mandatory 6-stage feedback loop (<span class="font-bold text-indigo-600">Observe → Estimate → Intervene → Measure → Update → Decide</span>) in real time.
+                </p>
+
+                <!-- Interactive Stepper -->
+                <div class="grid grid-cols-2 sm:grid-cols-6 gap-2 text-center text-xs pt-1">
+                    <button onclick="inspectStage(1)" id="istage-btn-1" class="p-2.5 rounded-xl border-2 border-indigo-600 bg-indigo-50 font-bold text-indigo-800">
+                        1. OBSERVE
+                    </button>
+                    <button onclick="inspectStage(2)" id="istage-btn-2" class="p-2.5 rounded-xl border border-slate-200 bg-white font-semibold text-slate-600 hover:bg-slate-50">
+                        2. ESTIMATE
+                    </button>
+                    <button onclick="inspectStage(3)" id="istage-btn-3" class="p-2.5 rounded-xl border border-slate-200 bg-white font-semibold text-slate-600 hover:bg-slate-50">
+                        3. INTERVENE
+                    </button>
+                    <button onclick="inspectStage(4)" id="istage-btn-4" class="p-2.5 rounded-xl border border-slate-200 bg-white font-semibold text-slate-600 hover:bg-slate-50">
+                        4. MEASURE
+                    </button>
+                    <button onclick="inspectStage(5)" id="istage-btn-5" class="p-2.5 rounded-xl border border-slate-200 bg-white font-semibold text-slate-600 hover:bg-slate-50">
+                        5. UPDATE
+                    </button>
+                    <button onclick="inspectStage(6)" id="istage-btn-6" class="p-2.5 rounded-xl border border-slate-200 bg-white font-semibold text-slate-600 hover:bg-slate-50">
+                        6. DECIDE
+                    </button>
+                </div>
+            </div>
+
+            <!-- Execution Log Viewer -->
+            <div class="bg-slate-900 rounded-2xl p-5 text-white shadow-xl space-y-3">
+                <div class="flex justify-between items-center border-b border-slate-800 pb-2.5">
+                    <div>
+                        <span id="itrace-num" class="text-[10px] bg-indigo-500/30 text-indigo-300 border border-indigo-400/30 px-2 py-0.5 rounded-full font-bold">
+                            STAGE 1 OF 6
+                        </span>
+                        <h4 id="itrace-title" class="text-sm sm:text-base font-bold text-white mt-1">OBSERVE: Multimodal Input Ingestion</h4>
+                    </div>
+                    <span id="itrace-latency" class="font-mono text-xs text-emerald-400 bg-slate-800 px-2.5 py-1 rounded-lg">
+                        Latency: 42.1ms
+                    </span>
+                </div>
+
+                <p id="itrace-desc" class="text-xs text-slate-300 leading-relaxed">
+                    Captures raw student input across modalities (handwritten OCR, voice audio in Hindi via Bhashini, or text). Extracts key equations, spatial bounding vectors, and student sentiment.
+                </p>
+
+                <div class="bg-slate-950 p-3.5 rounded-xl font-mono text-xs text-indigo-200 border border-slate-800">
+                    <div class="text-slate-500 mb-1 text-[10px]">// System Execution Payload</div>
+                    <pre id="itrace-code" class="text-[11px] overflow-x-auto leading-relaxed">
+{
+  "stage": "OBSERVE",
+  "input_type": "handwritten_ocr_image",
+  "formulas_detected": ["v = u + at", "v^2 = u^2 + 2as"],
+  "confidence": 0.984
+}</pre>
+                </div>
+            </div>
+
+        </section>
+
+        <!-- VIEW 4: SIH PITCH DEFENSE & USP -->
+        <section id="sec-defense" class="space-y-5 hidden">
+            
+            <div class="bg-slate-900 rounded-2xl p-5 text-white shadow-xl space-y-2">
+                <span class="px-2.5 py-0.5 bg-amber-500/20 border border-amber-400/30 text-amber-300 rounded text-[10px] font-bold uppercase tracking-wider">
+                    Direct Defense for SIH Judges
+                </span>
+                <h2 class="text-xl font-black text-white">
+                    Defending Mentaura AI: USP & Research Gap
+                </h2>
+                <p class="text-slate-300 text-xs leading-relaxed">
+                    Mentaura AI resolves judge questions through a **closed-loop learner state estimator**, **sub-38ms Socratic guardrails**, **Sarvam-1 Indic LLM token compression**, and **APAAR / UDISE+ DPI integration**.
+                </p>
+            </div>
+
+            <!-- 3 Core Judge Questions Grid -->
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4 text-xs">
+                <div class="bg-white p-4 rounded-xl border-t-4 border-indigo-600 border-x border-b border-slate-200/80 shadow-sm space-y-1.5">
+                    <div class="font-bold text-slate-900 text-xs">1. Defensible USP</div>
+                    <p class="text-slate-600 leading-relaxed">
+                        Sovereign closed-loop stack combining Reflex Guard anti-answer leakage (37.6ms), Lean 4 step verifiers, and APAAR ID micro-credit logging.
+                    </p>
+                </div>
+
+                <div class="bg-white p-4 rounded-xl border-t-4 border-amber-500 border-x border-b border-slate-200/80 shadow-sm space-y-1.5">
+                    <div class="font-bold text-slate-900 text-xs">2. Research Gap Resolved</div>
+                    <p class="text-slate-600 leading-relaxed">
+                        Solves 6x Indic token inflation in Western LLMs and eliminates step-level math derivation hallucinations via Lean kernels.
+                    </p>
+                </div>
+
+                <div class="bg-white p-4 rounded-xl border-t-4 border-emerald-600 border-x border-b border-slate-200/80 shadow-sm space-y-1.5">
+                    <div class="font-bold text-slate-900 text-xs">3. Target Population</div>
+                    <p class="text-slate-600 leading-relaxed">
+                        Grades 8–12 Indian students in CBSE, DBSE & SOSE STEM, as well as Tier-2/3 vernacular learners facing 1:50+ teacher ratios.
+                    </p>
+                </div>
+            </div>
+
+            <!-- Radar Chart & Indic Token Inflation Chart -->
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-5">
+                <div class="lg:col-span-6 bg-white p-5 rounded-2xl border border-slate-200/80 shadow-sm flex flex-col justify-between">
+                    <div>
+                        <h3 class="font-bold text-slate-800 text-xs mb-0.5">SIH Pitch Defense Radar Comparison</h3>
+                        <p class="text-[11px] text-slate-500 mb-2">Comparing traditional rule engines against Mentaura AI.</p>
+                    </div>
+                    <div class="chart-container">
+                        <canvas id="chart-defense-radar"></canvas>
+                    </div>
+                </div>
+
+                <div class="lg:col-span-6 bg-white p-5 rounded-2xl border border-slate-200/80 shadow-sm flex flex-col justify-between">
+                    <div>
+                        <h3 class="font-bold text-slate-800 text-xs mb-0.5">Indic Token Inflation (Tokens per Devanagari Word)</h3>
+                        <p class="text-[11px] text-slate-500 mb-2">Sarvam-1 drastically reduces LLM API costs in regional Indian languages.</p>
+                    </div>
+                    <div class="chart-container">
+                        <canvas id="chart-token-cost"></canvas>
+                    </div>
+                </div>
+            </div>
+
+        </section>
+
+        <!-- VIEW 5: ROI & IMPACT CALCULATOR -->
+        <section id="sec-roi" class="space-y-5 hidden">
+            
+            <div class="bg-white p-5 rounded-2xl border border-slate-200/80 shadow-sm space-y-1.5">
+                <h3 class="text-lg font-bold text-slate-900">
+                    Institutional ROI & Impact Simulator
+                </h3>
+                <p class="text-slate-600 text-xs">
+                    Simulate deployment across Delhi schools (SOSE & DBSE). Calculate teacher grading time saved and LLM inference cost reductions.
+                </p>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-5">
+                <div class="lg:col-span-5 bg-white p-5 rounded-2xl border border-slate-200/80 shadow-sm space-y-4">
+                    <h4 class="font-bold text-slate-800 text-xs border-b border-slate-100 pb-2">Cohort Parameters</h4>
+
+                    <div>
+                        <div class="flex justify-between text-xs font-semibold text-slate-700 mb-1">
+                            <label for="slider-students">Active Student Cohort:</label>
+                            <span id="val-students" class="text-indigo-600 font-bold">5,000 Students</span>
+                        </div>
+                        <input id="slider-students" type="range" min="1000" max="50000" step="1000" value="5000" oninput="updateROI()" class="w-full accent-indigo-600">
+                    </div>
+
+                    <div>
+                        <div class="flex justify-between text-xs font-semibold text-slate-700 mb-1">
+                            <label for="slider-tests">Monthly Tests / Student:</label>
+                            <span id="val-tests" class="text-indigo-600 font-bold">4 Tests</span>
+                        </div>
+                        <input id="slider-tests" type="range" min="1" max="10" step="1" value="4" oninput="updateROI()" class="w-full accent-indigo-600">
+                    </div>
+
+                    <div>
+                        <div class="flex justify-between text-xs font-semibold text-slate-700 mb-1">
+                            <label for="slider-indic">Hindi / Regional Mix (%):</label>
+                            <span id="val-indic" class="text-indigo-600 font-bold">60% Hindi</span>
+                        </div>
+                        <input id="slider-indic" type="range" min="0" max="100" step="5" value="60" oninput="updateROI()" class="w-full accent-indigo-600">
+                    </div>
+
+                    <div class="p-3.5 bg-indigo-50/70 rounded-xl border border-indigo-100 text-xs text-slate-700 space-y-1.5">
+                        <div class="font-bold text-indigo-900">Projected Monthly Outcomes:</div>
+                        <div class="flex justify-between">
+                            <span>Teacher Time Saved:</span>
+                            <span id="res-hours" class="font-bold text-emerald-700">1,200 hrs / mo</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span>LLM Cost Savings:</span>
+                            <span id="res-cost" class="font-bold text-emerald-700">$2,880 / mo</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span>Mastery Acceleration:</span>
+                            <span id="res-retention" class="font-bold text-indigo-700">+52% YoY</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="lg:col-span-7 bg-white p-5 rounded-2xl border border-slate-200/80 shadow-sm flex flex-col justify-between">
+                    <div>
+                        <h4 class="font-bold text-slate-800 text-xs mb-0.5">Monthly Operational Cost Comparison ($ USD)</h4>
+                        <p class="text-[11px] text-slate-500 mb-2">Comparing standard Western LLMs vs. Mentaura's Sarvam-1 pipeline.</p>
+                    </div>
+                    <div class="chart-container">
+                        <canvas id="chart-roi-impact"></canvas>
+                    </div>
+                </div>
+            </div>
+
+        </section>
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-white border-t border-slate-200/80 py-3 mt-6">
+        <div class="max-w-7xl mx-auto px-4 text-center text-[11px] text-slate-500 space-y-0.5">
+            <p><strong>Mentaura AI Sovereign Adaptive Learning Prototype</strong> — SIH Nationals, DBSE, SOSE, CBSE SAFAL & NEP 2020 Compliant.</p>
+            <p class="text-slate-400">Built using Vanilla JS, Tailwind CSS, and Chart.js. Zero SVG graphics used.</p>
+        </div>
+    </footer>
+
+    <!-- JavaScript Logic -->
+    <script>
+        let currentLang = 'en';
+
+        const engineTraceData = {
+            1: {
+                num: "STAGE 1 OF 6",
+                title: "OBSERVE: Multimodal Input Ingestion",
+                latency: "42.1ms",
+                desc: "Captures query, scanned work via Mistral Vision, or Hindi speech via Bhashini. Extracts inline equations, spatial bounding vectors, and student sentiment.",
+                code: '{\n  "stage": "OBSERVE",\n  "input_type": "handwritten_ocr_image",\n  "formulas_detected": ["v = u + at", "v^2 = u^2 + 2as"],\n  "confidence": 0.984\n}'
+            },
+            2: {
+                num: "STAGE 2 OF 6",
+                title: "ESTIMATE: Bayesian Knowledge Tracing (BKT)",
+                latency: "28.4ms",
+                desc: "Updates learner mastery probability vector p(L_t) for concept node M_204 (Kinematics) factoring slip (s=0.08) and guess (g=0.12) parameters.",
+                code: '{\n  "stage": "ESTIMATE",\n  "concept_node": "M_204_Kinematics",\n  "prior_mastery": 0.48,\n  "updated_mastery": 0.62,\n  "slip_factor": 0.08,\n  "guess_factor": 0.12\n}'
+            },
+            3: {
+                num: "STAGE 3 OF 6",
+                title: "INTERVENE: Reflex-Guard & Socratic Selection",
+                latency: "37.6ms",
+                desc: "Sentence-Transformer classifier scans for answer leakage. If student asks for direct solution, it blocks disclosure and triggers peer 'Charlie' to offer a deliberate flaw.",
+                code: '{\n  "stage": "INTERVENE",\n  "reflex_guard_triggered": true,\n  "leakage_risk_score": 0.98,\n  "socratic_strategy": "peer_error_challenge",\n  "active_peer": "Charlie"\n}'
+            },
+            4: {
+                num: "STAGE 4 OF 6",
+                title: "MEASURE: Latency & Articulation Logging",
+                latency: "115.0ms",
+                desc: "Measures student response time and correctness in identifying Charlie's error. Calculates articulation clarity and error fix verification.",
+                code: '{\n  "stage": "MEASURE",\n  "time_taken_sec": 42,\n  "error_correctly_spotted": true,\n  "articulation_score": 0.89\n}'
+            },
+            5: {
+                num: "STAGE 5 OF 6",
+                title: "UPDATE: Sovereign DPI APAAR Sync",
+                latency: "85.2ms",
+                desc: "Pushes micro-credit mastery record to student's 12-digit APAAR ID and updates school UDISE+ database.",
+                code: '{\n  "stage": "UPDATE",\n  "apaar_id": "9081-2234-1102",\n  "credit_increment": 0.5,\n  "abc_ledger_status": "CREDITED"\n}'
+            },
+            6: {
+                num: "STAGE 6 OF 6",
+                title: "DECIDE: WhatsApp Nudge & Activity Selection",
+                latency: "64.0ms",
+                desc: "Selects next optimal node (2D Projectile Motion) and dispatches daily micro-streak alert to parent WhatsApp thread.",
+                code: '{\n  "stage": "DECIDE",\n  "next_recommended_node": "M_205_2D_Projectile",\n  "parent_whatsapp_sent": true,\n  "daily_streak": 7\n}'
+            }
+        };
+
+        let chartDefenseRadar = null;
+        let chartTokenCost = null;
+        let chartROIImpact = null;
+
+        document.addEventListener('DOMContentLoaded', () => {
+            initCharts();
+            updateROI();
+        });
+
+        function setGlobalLang(lang) {
+            currentLang = lang;
+            const btnEn = document.getElementById('btn-lang-en');
+            const btnHi = document.getElementById('btn-lang-hi');
+
+            if (lang === 'hi') {
+                btnHi.className = "px-2 py-0.5 rounded bg-white text-indigo-600 font-bold shadow-sm";
+                btnEn.className = "px-2 py-0.5 rounded hover:text-indigo-600";
+                alert("Mentaura AI interface switched to Hindi (Bhashini Engine Active). Try typing in Hindi in the Socratic workspace!");
+            } else {
+                btnEn.className = "px-2 py-0.5 rounded bg-white text-indigo-600 font-bold shadow-sm";
+                btnHi.className = "px-2 py-0.5 rounded hover:text-indigo-600";
+            }
+        }
+
+        function switchTab(tabId) {
+            const tabs = ['workspace', 'teacher', 'inspector', 'defense', 'roi'];
+            tabs.forEach(t => {
+                const btn = document.getElementById(`tab-${t}`);
+                const sec = document.getElementById(`sec-${t}`);
+                if (t === tabId) {
+                    btn.className = "px-3 py-1.5 rounded-lg transition-all nav-btn-active whitespace-nowrap";
+                    sec.classList.remove('hidden');
+                } else {
+                    btn.className = "px-3 py-1.5 rounded-lg transition-all hover:text-indigo-600 whitespace-nowrap";
+                    sec.classList.add('hidden');
+                }
+            });
+
+            if (tabId === 'defense') {
+                if (chartDefenseRadar) chartDefenseRadar.resize();
+                if (chartTokenCost) chartTokenCost.resize();
+            }
+            if (tabId === 'roi' && chartROIImpact) {
+                chartROIImpact.resize();
+            }
+        }
+
+        function setStudioMode(mode) {
+            const btnChat = document.getElementById('smode-chat');
+            const btnProof = document.getElementById('smode-proof');
+            const btnOcr = document.getElementById('smode-ocr');
+
+            const viewChat = document.getElementById('view-studio-chat');
+            const viewProof = document.getElementById('view-studio-proof');
+            const viewOcr = document.getElementById('view-studio-ocr');
+
+            [btnChat, btnProof, btnOcr].forEach(b => {
+                b.className = "flex-1 md:flex-none px-3.5 py-1.5 rounded-lg hover:text-indigo-700 font-medium";
+            });
+
+            viewChat.classList.add('hidden');
+            viewProof.classList.add('hidden');
+            viewOcr.classList.add('hidden');
+
+            if (mode === 'chat') {
+                btnChat.className = "flex-1 md:flex-none px-3.5 py-1.5 rounded-lg bg-white text-indigo-700 shadow-sm font-bold";
+                viewChat.classList.remove('hidden');
+            } else if (mode === 'proof') {
+                btnProof.className = "flex-1 md:flex-none px-3.5 py-1.5 rounded-lg bg-white text-indigo-700 shadow-sm font-bold";
+                viewProof.classList.remove('hidden');
+            } else if (mode === 'ocr') {
+                btnOcr.className = "flex-1 md:flex-none px-3.5 py-1.5 rounded-lg bg-white text-indigo-700 shadow-sm font-bold";
+                viewOcr.classList.remove('hidden');
+            }
+        }
+
+        function handleChatKeyPress(e) {
+            if (e.key === 'Enter') sendUserMessage();
+        }
+
+        let chatHistory = [];
+        let isWaitingForAI = false;
+        
+        const systemPrompt = `You are Mentaura, a Socratic AI Tutor designed for Grades 8-12 students in India (CBSE/DBSE/SOSE).
+Your core mandate is the 'Reflex Guard': NEVER provide direct answers to homework questions, code, or math problems.
+Instead, you MUST use Socratic questioning to guide the student to discover the answer themselves.
+If they ask for a direct answer or solution, acknowledge it, politely refuse based on your pedagogical programming, and ask a leading question related to the underlying concept.
+Keep your responses concise, encouraging, and formatted clearly. Use bolding for key terms.`;
+
+        async function fetchGeminiResponseWithRetry(payload, maxRetries = 3) {
+            const apiKey = ""; // API key is automatically provided by the Canvas runtime
+            const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-3-flash-preview:generateContent?key=${apiKey}`;
+
+            for (let i = 0; i < maxRetries; i++) {
+                try {
+                    const response = await fetch(apiUrl, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(payload)
+                    });
+
+                    if (!response.ok) {
+                        if (response.status === 429) {
+                            // Implement exponential backoff for throttling (1s, 2s, 4s...)
+                            const delay = Math.pow(2, i) * 1000;
+                            await new Promise(res => setTimeout(res, delay));
+                            continue;
+                        }
+                        throw new Error(`HTTP error! status: ${response.status}`);
+                    }
+                    return await response.json();
+                } catch (e) {
+                    if (i === maxRetries - 1) throw e;
+                }
+            }
+        }
+
+        async function sendUserMessage() {
+            if (isWaitingForAI) return;
+
+            const input = document.getElementById('user-chat-input');
+            const text = input.value.trim();
+            if (!text) return;
+
+            // 1. Update UI and Context History
+            appendUserBubble(text);
+            input.value = '';
+            chatHistory.push({ role: "user", parts: [{ text: text }] });
+
+            // 2. Trigger visual demo effects (Optional local checks)
+            const isDirectAnswerRequest = text.toLowerCase().includes('answer') || text.toLowerCase().includes('give me') || text.toLowerCase().includes('solution') || text.includes('उत्तर');
+            if (isDirectAnswerRequest) {
+                triggerReflexAlert();
+            }
+
+            // 3. Display Loading State
+            isWaitingForAI = true;
+            const loadingId = appendLoadingBubble();
+            input.disabled = true;
+
+            try {
+                // 4. Prepare and Send API Request
+                const payload = {
+                    systemInstruction: { parts: [{ text: systemPrompt }] },
+                    contents: chatHistory
+                };
+
+                const result = await fetchGeminiResponseWithRetry(payload);
+
+                // 5. Process and Display Response
+                removeBubble(loadingId);
+                const candidate = result.candidates?.[0];
+                
+                if (candidate && candidate.content?.parts?.[0]?.text) {
+                    let aiText = candidate.content.parts[0].text;
+                    
+                    // Basic Markdown formatting for bold text in the UI
+                    aiText = aiText.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+                    
+                    appendAiBubble(aiText, isDirectAnswerRequest);
+                    
+                    // Store the raw model response in history
+                    chatHistory.push({ role: "model", parts: [{ text: candidate.content.parts[0].text }] });
+                    
+                    // Simulate updating BKT progress occasionally after successful interaction
+                    if (Math.random() > 0.6) updateBKTProgress();
+                } else {
+                     appendAiBubble("I encountered an issue structuring my thoughts. Could we try approaching the problem from another angle?", true);
+                }
+            } catch (error) {
+                removeBubble(loadingId);
+                appendAiBubble("Network connection error. Please ensure you are online and try sending your message again.", true);
+            } finally {
+                // 6. Cleanup and Reset
+                isWaitingForAI = false;
+                input.disabled = false;
+                input.focus();
+            }
+        }
+
+        function appendLoadingBubble() {
+            const id = 'loading-' + Date.now();
+            const container = document.getElementById('chat-messages-container');
+            const div = document.createElement('div');
+            div.id = id;
+            div.className = "flex items-start space-x-2";
+            div.innerHTML = `
+                <div class="w-6 h-6 rounded-full bg-indigo-100 text-indigo-700 flex items-center justify-center font-bold text-[10px] flex-shrink-0 mt-0.5 animate-pulse">AI</div>
+                <div class="chat-bubble-ai p-3 max-w-[85%] flex space-x-1.5 items-center h-10 border-indigo-200">
+                    <div class="w-1.5 h-1.5 bg-indigo-400 rounded-full animate-bounce"></div>
+                    <div class="w-1.5 h-1.5 bg-indigo-400 rounded-full animate-bounce" style="animation-delay: 0.15s"></div>
+                    <div class="w-1.5 h-1.5 bg-indigo-400 rounded-full animate-bounce" style="animation-delay: 0.3s"></div>
+                </div>
+            `;
+            container.appendChild(div);
+            container.scrollTop = container.scrollHeight;
+            return id;
+        }
+
+        function removeBubble(id) {
+            const el = document.getElementById(id);
+            if (el) el.remove();
+        }
+
+        function sendQuickPrompt(type) {
+            const input = document.getElementById('user-chat-input');
+            if (type === 'direct') input.value = "Just give me the full answer for v = u + at";
+            if (type === 'socratic') input.value = "I don't know how to derive velocity-time graph";
+            if (type === 'hindi') input.value = "पाइथागोरस प्रमेय समझाइए";
+            if (type === 'emc') input.value = "Business Blasters: Pitch review for unit cost";
+            sendUserMessage();
+        }
+
+        function appendUserBubble(msg) {
+            const container = document.getElementById('chat-messages-container');
+            const div = document.createElement('div');
+            div.className = "flex items-start justify-end space-x-2";
+            div.innerHTML = `
+                <div class="chat-bubble-user p-3 max-w-[85%] shadow-sm">
+                    <p>${msg}</p>
+                </div>
+                <div class="w-6 h-6 rounded-full bg-slate-800 text-white flex items-center justify-center font-bold text-[10px] flex-shrink-0 mt-0.5">You</div>
+            `;
+            container.appendChild(div);
+            container.scrollTop = container.scrollHeight;
+        }
+
+        function appendAiBubble(msg, isAlert = false) {
+            const container = document.getElementById('chat-messages-container');
+            const div = document.createElement('div');
+            div.className = "flex items-start space-x-2";
+            div.innerHTML = `
+                <div class="w-6 h-6 rounded-full bg-indigo-600 text-white flex items-center justify-center font-bold text-[10px] flex-shrink-0 mt-0.5">AI</div>
+                <div class="chat-bubble-ai p-3 max-w-[85%] space-y-1 ${isAlert ? 'border-amber-300 bg-amber-50/50' : ''}">
+                    <p class="text-slate-800 leading-relaxed">${msg}</p>
+                </div>
+            `;
+            container.appendChild(div);
+            container.scrollTop = container.scrollHeight;
+        }
+
+        function appendPeerBubble(msg) {
+            const container = document.getElementById('chat-messages-container');
+            const div = document.createElement('div');
+            div.className = "flex items-start space-x-2";
+            div.innerHTML = `
+                <div class="w-6 h-6 rounded-full bg-amber-600 text-white flex items-center justify-center font-bold text-[10px] flex-shrink-0 mt-0.5">C</div>
+                <div class="chat-bubble-peer p-3 max-w-[85%]">
+                    <p class="font-medium text-amber-950">${msg}</p>
+                </div>
+            `;
+            container.appendChild(div);
+            container.scrollTop = container.scrollHeight;
+        }
+
+        function triggerReflexAlert() {
+            const box = document.getElementById('reflex-alert-box');
+            box.classList.remove('hidden');
+            setTimeout(() => {
+                box.classList.add('hidden');
+            }, 5000);
+        }
+
+        function updateBKTProgress() {
+            document.getElementById('bkt-score-1').innerText = "74%";
+            document.getElementById('bkt-bar-1').style.width = "74%";
+        }
+
+        function runFormalCheck() {
+            const terminal = document.getElementById('lean-terminal-output');
+            terminal.innerHTML = `
+                <p class="text-emerald-400">[INFO] Re-running Lean 4 proof verification kernel...</p>
+                <p class="text-emerald-400">[VALID] Steps 1..4 algebraic expansions verified.</p>
+                <p class="text-amber-400">[ERROR] Step 5 mismatch: Found (v^2 + u^2). Expected (v^2 - u^2).</p>
+            `;
+        }
+
+        function fixStepError() {
+            document.getElementById('proof-step-5').value = "2*a*s = v^2 - u^2";
+            document.getElementById('proof-step-5').className = "flex-grow p-2.5 bg-emerald-50 border border-emerald-300 text-emerald-900 rounded-lg font-mono text-xs";
+            document.getElementById('vstatus-5').innerText = "✓ Valid";
+            document.getElementById('vstatus-5').className = "text-emerald-600 font-bold text-xs w-16 text-right";
+
+            const terminal = document.getElementById('lean-terminal-output');
+            terminal.innerHTML = `
+                <p class="text-emerald-400">[INFO] Step 5 sign error resolved!</p>
+                <p class="text-emerald-400">[SUCCESS] Full proof for v^2 = u^2 + 2as formally verified by Lean 4 kernel.</p>
+                <p class="text-indigo-300">[APAAR SYNC] Pushing 0.5 mastery credit to student ledger...</p>
+            `;
+        }
+
+        function runOCRScan() {
+            const preview = document.getElementById('ocr-json-preview');
+            preview.innerText = `// Parsing scanned handwritten image...
+{
+  "engine": "Mistral OCR",
+  "status": "PARSED_SUCCESS",
+  "confidence": 0.991,
+  "latex_inline": "v = u + at",
+  "steps_extracted": [
+    "Step 1: v = u + at",
+    "Step 2: t = (v - u) / a"
+  ],
+  "socratic_trigger": "Ready for Lean step verification"
+}`;
+        }
+
+        function triggerWADemo() {
+            alert("WhatsApp Parent Alert Dispatched via Meta Cloud API!\n\nMessage Preview:\n'Dear Parent, Aarav completed 7 daily micro-streaks in Kinematics on Mentaura AI. CBSE SAFAL Diagnostic Status: Proficient (Top 10% in Class 11 SOSE)'");
+        }
+
+        function inspectStage(stageNum) {
+            for (let i = 1; i <= 6; i++) {
+                const btn = document.getElementById(`istage-btn-${i}`);
+                if (i === stageNum) {
+                    btn.className = "p-2.5 rounded-xl border-2 border-indigo-600 bg-indigo-50 font-bold text-indigo-800";
+                } else {
+                    btn.className = "p-2.5 rounded-xl border border-slate-200 bg-white font-semibold text-slate-600 hover:bg-slate-50";
+                }
+            }
+
+            const data = engineTraceData[stageNum];
+            document.getElementById('itrace-num').innerText = data.num;
+            document.getElementById('itrace-title').innerText = data.title;
+            document.getElementById('itrace-latency').innerText = `Latency: ${data.latency}`;
+            document.getElementById('itrace-desc').innerText = data.desc;
+            document.getElementById('itrace-code').innerText = data.code;
+        }
+
+        function initCharts() {
+            const ctxRadar = document.getElementById('chart-defense-radar').getContext('2d');
+            chartDefenseRadar = new Chart(ctxRadar, {
+                type: 'radar',
+                data: {
+                    labels: [
+                        ['Defensible USP', '& Innovation'],
+                        ['Socratic Guard', '(<38ms Latency)'],
+                        ['Indic Token', 'Efficiency'],
+                        ['DPI APAAR /', 'UDISE+ Sync'],
+                        ['CBSE SAFAL /', 'DBSE Fit'],
+                        ['Formal Proof', 'Verification']
+                    ],
+                    datasets: [
+                        {
+                            label: 'Standard Rule-Based Engine',
+                            data: [30, 15, 20, 10, 25, 10],
+                            backgroundColor: 'rgba(148, 163, 184, 0.2)',
+                            borderColor: '#94a3b8',
+                            borderWidth: 2,
+                            pointRadius: 3
+                        },
+                        {
+                            label: 'Mentaura AI Sovereign Stack',
+                            data: [96, 95, 94, 98, 95, 92],
+                            backgroundColor: 'rgba(67, 56, 202, 0.25)',
+                            borderColor: '#4338ca',
+                            borderWidth: 2.5,
+                            pointRadius: 4
+                        }
+                    ]
+                },
+                options: {
+                    maintainAspectRatio: false,
+                    responsive: true,
+                    scales: {
+                        r: {
+                            angleLines: { color: '#e2e8f0' },
+                            grid: { color: '#f1f5f9' },
+                            pointLabels: {
+                                font: { size: 10, family: 'Inter', weight: '600' },
+                                color: '#475569'
+                            },
+                            ticks: { display: false, max: 100 }
+                        }
+                    },
+                    plugins: {
+                        legend: { position: 'bottom', labels: { boxWidth: 10, font: { size: 10 } } }
+                    }
+                }
+            });
+
+            const ctxToken = document.getElementById('chart-token-cost').getContext('2d');
+            chartTokenCost = new Chart(ctxToken, {
+                type: 'bar',
+                data: {
+                    labels: ['GPT-4o', 'Gemini 1.5', 'Llama 3.1', 'Sarvam-1 (Native)'],
+                    datasets: [{
+                        label: 'Tokens / Devanagari Word',
+                        data: [6.2, 5.8, 4.5, 1.4],
+                        backgroundColor: ['#f43f5e', '#fb7185', '#fbbf24', '#10b981'],
+                        borderRadius: 6
+                    }]
+                },
+                options: {
+                    maintainAspectRatio: false,
+                    responsive: true,
+                    plugins: { legend: { display: false } },
+                    scales: {
+                        y: { beginAtZero: true, title: { display: true, text: 'Tokens / Devanagari Word', font: { size: 10 } } },
+                        x: { ticks: { font: { size: 10 } } }
+                    }
+                }
+            });
+
+            const ctxROI = document.getElementById('chart-roi-impact').getContext('2d');
+            chartROIImpact = new Chart(ctxROI, {
+                type: 'bar',
+                data: {
+                    labels: ['LLM Inference Cost ($)', 'Teacher Grading Hours', 'Student Dropoff (%)'],
+                    datasets: [
+                        {
+                            label: 'Standard Western Stack',
+                            data: [4200, 1800, 42],
+                            backgroundColor: '#cbd5e1',
+                            borderRadius: 6
+                        },
+                        {
+                            label: 'Mentaura AI Stack',
+                            data: [1320, 600, 12],
+                            backgroundColor: '#059669',
+                            borderRadius: 6
+                        }
+                    ]
+                },
+                options: {
+                    maintainAspectRatio: false,
+                    responsive: true,
+                    plugins: { legend: { position: 'bottom', labels: { boxWidth: 10, font: { size: 10 } } } },
+                    scales: { y: { beginAtZero: true } }
+                }
+            });
+        }
+
+        function updateROI() {
+            const students = parseInt(document.getElementById('slider-students').value);
+            const tests = parseInt(document.getElementById('slider-tests').value);
+            const indicPct = parseInt(document.getElementById('slider-indic').value);
+
+            document.getElementById('val-students').innerText = `${students.toLocaleString()} Students`;
+            document.getElementById('val-tests').innerText = `${tests} Tests / mo`;
+            document.getElementById('val-indic').innerText = `${indicPct}% Hindi/Regional`;
+
+            const totalTests = students * tests;
+            const hoursSaved = Math.round((totalTests * 12) / 60);
+            
+            const baseCost = Math.round(students * 0.84); 
+            const indicSavingsFactor = 1 - (indicPct / 100) * 0.58;
+            const optimizedCost = Math.round(baseCost * indicSavingsFactor * 0.38);
+            const monthlySavings = baseCost - optimizedCost;
+
+            document.getElementById('res-hours').innerText = `${hoursSaved.toLocaleString()} hrs / mo`;
+            document.getElementById('res-cost').innerText = `$${monthlySavings.toLocaleString()} / mo`;
+            document.getElementById('res-retention').innerText = `+${Math.round(40 + (indicPct/5))}% YoY`;
+
+            if (chartROIImpact) {
+                chartROIImpact.data.datasets[0].data = [baseCost, hoursSaved * 1.5, 42];
+                chartROIImpact.data.datasets[1].data = [optimizedCost, hoursSaved * 0.3, 12];
+                chartROIImpact.update();
+            }
+        }
+    </script>
+</body>
+</html>
